@@ -7,10 +7,6 @@ int main(){
 	int b;
 	scanf("%d %d", &a, &b);
 	printf("\nres: %d\n\n",a % b);	
-
-
-
-
 }
 /*
  *  13  %  5 =  3
