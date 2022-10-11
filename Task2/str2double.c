@@ -6,12 +6,16 @@ double str2double( char str[]){
   char *p = str;
   bool exp = false;
   bool frac = false;
+  bool sign = false;
   short pw1 = 0;
   short pw2 = 0;
   int k=0;
   char c;
   while(c = *p){
     switch(c){
+      case '-':
+        sign = true;
+        break;
       case '.': 
         frac = true;
         break;
@@ -19,8 +23,6 @@ double str2double( char str[]){
         frac = false;
         exp = true; 
         break;
-      case '\0':
-        return res;
       default:
         ++k;
         if (exp){
@@ -39,7 +41,7 @@ double str2double( char str[]){
   pw1 = pw1 + pw2;
   for(int i = 0; i<pw1; ++i) res*=10;
   for(int i = 0; i>pw1; --i) res/=10;
-  return res;
+  return sign ? -res : res;
 }
 
 int main(){
