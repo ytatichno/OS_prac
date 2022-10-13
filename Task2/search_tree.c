@@ -67,12 +67,14 @@ void search_tree_rm(search_tree *t,TYPE e){
   while(n){
     TYPE _value = n->value;
     if (e == _value){
+      --t->size;
       if(n->g_child == NULL && n->l_child == NULL) {
         free(n);
         if (n0){ 
           if(g) n0->g_child = NULL;
           else  n0->l_child = NULL; 
         }
+        else t->root=NULL;
         return;
       }
       if(n->g_child == NULL) {
@@ -94,6 +96,20 @@ void search_tree_rm(search_tree *t,TYPE e){
         return;
       }
       
+    node *n1 = n->l_child;
+    node *n2;
+    while (n1->g_child){
+      n2 = n1;
+      n1 = n1->g_child;
+    }
+    n2->g_child=n1->l_child;
+    if(g) 
+      n0->g_child=n1;
+    else
+      n0->l_child=n1;
+   free(n); 
+   return;
+
       // place (multiple g child of l child of *n) value into *n value
       // if multiple g child has own l child
       // place it's value upper
@@ -131,6 +147,7 @@ void print_search_tree(search_tree *t){
   printf("        Y\n");
   printf("height: %d | size: %ld\n",t->height,t->size);
   pr_sub_search_tree(t->root);
+  printf("\n");
 }
 void search_tree_free(node *n){
   if(n){
@@ -159,13 +176,15 @@ int main(){
         else
           printf("no\n");
         break;
-//      case '-':
-//        search_tree
+      case '-':
+        search_tree_rm(&cur_tree,a);
+        printf("\ndel %ld done\n",a);
     }
   
   }
 
   print_search_tree(&cur_tree);
+
   search_tree_free(cur_tree.root);
   return 0;
 }

@@ -7,6 +7,7 @@ double str2double( char str[]){
   bool exp = false;
   bool frac = false;
   bool sign = false;
+  bool exp_sign = false;
   short pw1 = 0;
   short pw2 = 0;
   int k=0;
@@ -14,11 +15,15 @@ double str2double( char str[]){
   while(c = *p){
     switch(c){
       case '-':
-        sign = true;
+        if (exp)
+          exp_sign=true;
+        else
+          sign = true;
         break;
       case '.': 
         frac = true;
         break;
+      case 'E':
       case 'e':
         frac = false;
         exp = true; 
@@ -27,7 +32,10 @@ double str2double( char str[]){
         ++k;
         if (exp){
           pw2*=10;
-          pw2+=c-'0';
+          if (exp_sign)
+            pw2-=c-'0';
+          else
+            pw2+=c-'0';
 
         } else{
           res*=10;
