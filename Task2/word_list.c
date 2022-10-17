@@ -55,6 +55,32 @@ void init_list(word_list *l){
   l->current = NULL;
   l->root = NULL;
 }
+int count_word(word_list *l, char *wrd){
+  node *p=l->root;
+  int c =0;
+  while(p){
+    if(!strcmp(wrd,p->value)) 
+      ++c;
+    p=p->next;
+  }
+  return c;
+}
+char *get_popular_word(word_list *l){
+  int popular_count=0;
+  int buf;
+  char *popular_word;
+  node *p=l->root;
+  node *e=l->current;
+  while(p){
+    buf = count_word(l,p->value);
+    if(popular_count<buf){
+      popular_count = buf;
+      popular_word = p->value;
+    } 
+    p=p->next;
+  }
+  return popular_word;
+}
 
 int main(){
   char c = 32;
@@ -68,8 +94,9 @@ int main(){
     list_append(&wl, create_node(s,l,NULL));
 
   }
-
+  /*
   list_print(&wl);
+  
   node *end = wl.current;
   node *n = wl.root;
   node *n0;
@@ -94,7 +121,10 @@ int main(){
       n=n->next;
     }
   }
-  
+  */
+  printf("--there are %d word %s\n",count_word(&wl,wl.root->value),wl.root->value);
+  char *pw = get_popular_word(&wl);
+  printf("--most popular word is %s it occurs %d times",pw,count_word(&wl,pw));
   list_print(&wl);
   list_free(&wl);
   free(s);
