@@ -23,6 +23,8 @@ TYPE power(TYPE a, TYPE x);
 
 int main(){
 
+  int op_rel[6]= {0,0,0,0,0,0};
+
   size_t buf_size = 1024;
   char *input = calloc(buf_size,sizeof(char));
   unsigned int input_length =  getline(&input,&buf_size,stdin); 
@@ -38,13 +40,31 @@ int main(){
       case '\t':
       case '\n':
         break;
-      case '(':
+      case '(': 
+        ++op_rel[5];
+        push_op(&dq,c);
+        break;
       case ')':
+        push_op(&dq,c);
+        break;
       case '*':
+        ++op_rel[1];
+        push_op(&dq,c);
+        break;
       case '/':
+        ++op_rel[3];
+        push_op(&dq,c);
+        break;
       case '+':
+        ++op_rel[0];
+        push_op(&dq,c);
+        break;
       case '-':
+        ++op_rel[2];
+        push_op(&dq,c);
+        break;
       case '^':
+        ++op_rel[4];
         push_op(&dq,c);
         break;
 
@@ -73,6 +93,40 @@ for(int i =0; i<dq.act_len;++i){
 */
   push_op(&dq,'#'); //AKA flush operation ;)
   printf("%d \n",dq.as[0]);
+  char op_min_rel= ' ';
+  int op_min_rel_count = 1024;
+  for(int i = 0; i<6;++i){
+    if(op_rel[i]<op_min_rel_count && op_rel[i]>0){
+      op_min_rel_count = op_rel[i];
+      op_min_rel = i;
+    }
+  }
+  switch (op_min_rel){
+    case 0:
+      printf("most unpopular op in your expression is +"); 
+      break;
+    case 1:
+      printf("most unpopular op in your expression is *"); 
+      break;
+    case 2:
+      printf("most unpopular op in your expression is -"); 
+      break;
+    case 3:
+      printf("most unpopular op in your expression is /"); 
+      break;
+    case 4:
+      printf("most unpopular op in your expression is ^"); 
+      break;
+    case 5:
+      printf("most unpopular op in your expression is ()"); 
+      break;
+
+    default:
+      printf("no operations in your expression, bro( ");      
+      break;
+  }
+  if(op_min_rel_count!=1024)
+    printf(" it occurs %d times\n",op_min_rel_count);
   //printf("%c  %c  %c \n",dq.ops[0],dq.ops[1],dq.ops[2]);
   free(input);
   return EXIT_SUCCESS;
@@ -83,8 +137,9 @@ for(int i =0; i<dq.act_len;++i){
 
 
 TYPE power(TYPE a, TYPE x){
+  TYPE b = a;
   if(!x) return 1;
-  while(--x) a*=a;
+  while(--x) a*=b;
   return a;  
 }
 
@@ -101,7 +156,6 @@ TYPE read_num(char **s){
     ++len;
   }
   *s+=len-1;
-  printf("--found %d and move ptr for %d\n",result,len-1);
   return result;
 
 }
