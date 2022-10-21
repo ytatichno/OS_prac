@@ -30,10 +30,10 @@ int main(){
   scanf("%lf",&b);
   target += sprintf(target, "%lg%%20",b);
   target += sprintf(target, "dx%%20from%%20x%%3D0%%20to%%20%lf",x);
-  printf("\n%s\n%s\n",wolf_inp,target);
+//  printf("\n%s\n%s\n",wolf_inp,target);
   sprintf(url_req,"http://api.wolframalpha.com/v1/result"
       "?appid=%s&i=%s%%3f", appID,wolf_inp);
-printf("\n\n%s\n\n",url_req);
+//printf("\n\n%s\n\n",url_req);
 
 
   //set options
@@ -44,6 +44,7 @@ printf("\n\n%s\n\n",url_req);
   if (result != CURLE_OK){
     fprintf(stderr, "download problem: %s\n", curl_easy_strerror(result));
   }
+  printf("\n");
   free(wolf_inp);
   curl_easy_cleanup(curl);
   return EXIT_SUCCESS;
