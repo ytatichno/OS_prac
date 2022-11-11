@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdlib.h>
-#define TYPE int
+#define TYPE long long
 //TYPE freadone(FILE *file, bool *suctab)
 
 typedef struct node {
@@ -49,7 +49,7 @@ void srtd_insert_list(list *l, TYPE el, int f_ind){
     l->length = 1;
   } else{
     node *n = l->root;
-    node *p ;
+    node *p = n;
     //TYPE min_val;
     while(n && compare(el,n->value)>=0){
       p=n;
@@ -68,7 +68,7 @@ void print_list(list *l){
  // printf("\nur list with %d elements\n", l->length);
   node *n = l->root;
   while(n){
-    printf("%d ",n->value);
+    printf("%lld ",n->value);
   }
   printf("\n");
 }
@@ -86,13 +86,11 @@ TYPE pop_min_list(list *l){
 }
 */
 
-node pop_list(list *l){
+node * pop_list(list *l){
   node *n = l->root;
-  node res = *n;
   --l->length;
   l->root=n->next;
-  free(n);
-  return res;
+  return n;
 }
 
 void free_list(list *l){
@@ -118,6 +116,9 @@ int main(int argc, char *argv[]){
   FILE *f_pths[argc-1];// not a path exactly
   //TYPE f_objs[argc-1];
   list l;
+  l.root = NULL;
+  l.current = NULL;
+  l.length =0;
   bool f_read_interrupted[argc-1];
   bool f_reading = true;
   printf("\n");
@@ -126,23 +127,29 @@ int main(int argc, char *argv[]){
   }
   for(int i = 0; i<argc-1; ++i){
   if( (f_pths[i] = fopen(argv[i+1],"r")) ==  NULL){
-    close_files(f_pths,argc-1);
+    close_files(f_pths,i);
     exit(1);
 
   }
     TYPE element;
-     f_read_interrupted[i] = fscanf(f_pths[i],"%d",&element) == EOF;
+     f_read_interrupted[i] = fscanf(f_pths[i],"%lld",&element) == EOF;
 //f_read_interrupted[i] = fread(&element,sizeof(TYPE),1,f_pths[i]) <= 0 ;
     if(!f_read_interrupted[i]){
       srtd_insert_list(&l,element,i);
     }
+    else {
+      f_reading = isReading(f_read_interrupted,argc-1);
+    }
   }
   while(f_reading){
-    node to_print= pop_list(&l);
-    printf("%d ",to_print.value);
+    node *to_print= pop_list(&l);
+    if(!to_print)
+      exit(1);
+    printf("%lld ",to_print->value);
     TYPE element;
-    int f_ind = to_print.f_ind;
-    f_read_interrupted[f_ind] = fscanf(f_pths[f_ind],"%d",&element) == EOF;
+    int f_ind = to_print->f_ind;
+    f_read_interrupted[f_ind] = fscanf(f_pths[f_ind],"%lld",&element) == EOF;
+    free(to_print);
  //   f_read_interrupted[f_ind] = fread(&element,sizeof(TYPE),1,f_pths[f_ind]) <= 0 ;
     if(!f_read_interrupted[f_ind])
       srtd_insert_list(&l,element,f_ind);
@@ -163,8 +170,8 @@ int main(int argc, char *argv[]){
 
   
   }  
-  print_list(&l);
-  //printf("\n");
+  //print_list(&l);
+  printf("\n");
 
   for(int i = 1; i<argc; ++i){
     fclose(f_pths[i-1]);
