@@ -151,7 +151,7 @@ int main(){
   //printf("\n %ld    %s     %d\n",l,s,s[l-1]);
   
   list_print(&wl);
-  strange_reverse(&wl);
+  //strange_reverse(&wl);
   list_print(&wl);
   //printf("\n %d  %d  \n", wl.root->value[0],wl.root->next->value[0]);
  
