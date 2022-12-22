@@ -9,6 +9,32 @@
 size_t ceil_blocked(size_t i, size_t block_size){
   return i%block_size?i+(block_size-i%block_size):i;
 }
+bool is_sep(char a){
+  switch(a){
+    case '&':
+    case '|':
+    case ')':
+    case '(':
+    case ';':
+      return true;
+    default:
+      return false;
+  }
+}
+bool is_spec(char a){
+  switch(a){
+    case '&':
+    case '|':
+    case '>':
+    case '<':
+    case '(':
+    case ')':
+    case ';':
+      return true;
+    default:
+      return false;
+  }
+}
 
 node* create_node(char *str,size_t str_len, node *next){
   if(str[0]=='\0')
@@ -110,43 +136,45 @@ size_t mystrncpy(char *dest, char* src, size_t n){
   return zer_numb;
 }
 
+void list_append_repl(word_list *wl, char *w, size_t l){
+  --l;
+  char * envname = calloc(l,sizeof(char)); 
+  memmove(envname,w+1,l);
+  char * real_word = getenv(envname);
+  free(envname);
+  if(!real_word){
+    fprintf(stderr,"No such env vars\n");
+    fflush(stderr);
+    exit(1);
+  } else{
+    list_append(wl,create_node(real_word,l,NULL));
+  }
+
+}
 
 void list_append_spec_seq(word_list *wl, char *w,size_t l){
   char c = *w;
   wl->has_special = true;
-  if(c=='$'){
-    char * envname = calloc(l,sizeof(char));
-    memmove(envname,w+1,l);
-    char * real_word = getenv(envname);
-    free(envname);
-    if(!real_word){
-      fprintf(stderr,"No such env vars\n");
-      fflush(stderr);
-      exit(1);
+  char *real_word = calloc(2,sizeof(char));
+  for(int i = 0;i<l&&c;++i){
+    real_word[0]=c;
+    if((c=='&'&&*(w+1)=='&')
+        ||(c=='|'&&*(w+1)=='|')
+        ||(c=='<'&&*(w+1)=='<')
+        ||(c=='>'&&*(w+1)=='>')
+        ){
+      real_word[1]=c;
+      list_append(wl,create_node(real_word,2,NULL));
+      ++w;
     } else{
-      list_append(wl,create_node(real_word,l,NULL));
+     list_append(wl,create_node(real_word,1,NULL));
     }
-  } else{
-    char *real_word = calloc(2,sizeof(char));
-    for(int i = 0;i<l&&c;++i){
-      real_word[0]=c;
-      if((c=='&'&&*(w+1)=='&')
-          ||(c=='|'&&*(w+1)=='|')
-          ||(c=='<'&&*(w+1)=='<')
-          ||(c=='>'&&*(w+1)=='>')
-          ){
-        real_word[1]=c;
-        list_append(wl,create_node(real_word,2,NULL));
-        ++w;
-      } else{
-       list_append(wl,create_node(real_word,1,NULL));
-      }
 
-        ++w;
-        c=*w;
+      ++w;
+      c=*w;
     }
     free(real_word);
-  }
+  
 }
 
 

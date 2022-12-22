@@ -30,6 +30,7 @@ word_list * getcom(){
   bool was_special = false;
   bool was_classic = false;
   bool gona_stop = false;
+  bool gona_repl = false;
   bool unchanged = true;
   bool shield = false;
   for(size_t i = 0; i < l; ++i){
@@ -47,8 +48,14 @@ word_list * getcom(){
           word[to_free]='\0';
           if(was_special)
             list_append_spec_seq(wlp,word,to_free);
-          else
-            list_append(wlp,create_node(word,to_free+1,NULL));
+          else{
+            if(gona_repl){
+              gona_repl=false;
+              list_append_repl(wlp,word,to_free+1);
+            } else{
+              list_append(wlp,create_node(word,to_free+1,NULL));
+            }
+          }
           total_to_free+=to_free;
           was_special = false;
           was_classic = false;
@@ -70,7 +77,12 @@ word_list * getcom(){
         if(was_classic){
           memmove(word,comstr+total_to_free,to_free);
           word[to_free]='\0';
-          list_append(wlp,create_node(word,to_free+1,NULL));
+          if(gona_repl){
+            gona_repl=false;
+            list_append_repl(wlp,word,to_free+1);
+          } else{
+            list_append(wlp,create_node(word,to_free+1,NULL));
+          }
           total_to_free += to_free;
           was_classic = false;
           unchanged = false;
@@ -79,8 +91,8 @@ word_list * getcom(){
         was_special = true;
         ++to_free;
         break;
-        
       case '$':
+        gona_repl = true;  
       case '_':
       case '/':
       case '.':

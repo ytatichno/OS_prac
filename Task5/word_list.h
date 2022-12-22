@@ -18,6 +18,8 @@ typedef struct {
 
 
 size_t ceil_blocked(size_t i, size_t block_size);
+bool is_sep(char a);
+bool is_spec(char a);
 node* create_node(char *str,size_t str_len, node *next);
 
 void list_append(word_list *l,node *n);
@@ -29,7 +31,7 @@ char *get_popular_word(word_list *l);
 ///return number of passed 0s
 size_t mystrncpy(char *dest, char* src, size_t n);
 
-
+void list_append_repl(word_list *wl, char *w, size_t l);
 void list_append_spec_seq(word_list *wl, char *w,size_t l);
 
 node * push_min(word_list *wl, int (*comp)(char*a,char*b));
